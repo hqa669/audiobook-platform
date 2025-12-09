@@ -1,31 +1,33 @@
-import os
 from pathlib import Path
+from typing import List
 from openai import OpenAI
 from tqdm import tqdm
 
-DEFAULT_MODEL = "gpt-4o-mini-tts"
-DEFAULT_VOICE = "alloy"
+from settings import OPENAI_API_KEY
 
-def synthesize_paragraphs(paragraphs, output_dir: Path):
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY not set")
+MODEL = "gpt-4o-mini-tts"
+VOICE = "alloy"
 
-    client = OpenAI(api_key=api_key)
+
+def synthesize_paragraphs(
+    paragraphs: List[str],
+    output_dir: Path,
+) -> List[Path]:
+    client = OpenAI(api_key=OPENAI_API_KEY)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    audio_paths = []
+    audio_paths: List[Path] = []
 
-    for i, text in enumerate(tqdm(paragraphs)):
-        path = output_dir / f"{i:06d}.mp3"
+    for idx, text in enumerate(tqdm(paragraphs, desc="TTS paragraphs")):
+        path = output_dir / f"{idx:06d}.mp3"
         audio_paths.append(path)
 
         if path.exists():
             continue
 
         with client.audio.speech.with_streaming_response.create(
-            model=DEFAULT_MODEL,
-            voice=DEFAULT_VOICE,
+            model=MODEL,
+            voice=VOICE,
             input=text,
             response_format="mp3",
         ) as response:
