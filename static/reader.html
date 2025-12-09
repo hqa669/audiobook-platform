@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<body>
+<audio id="audio" controls src="audio.mp3"></audio>
+<div id="text"></div>
+
+<script>
+fetch("sync_map.json").then(r => r.json()).then(sync => {
+  const audio = document.getElementById("audio")
+  const c = document.getElementById("text")
+
+  sync.forEach(p => {
+    const d = document.createElement("div")
+    d.textContent = p.text
+    d.onclick = () => audio.currentTime = p.start
+    c.appendChild(d)
+  })
+})
+</script>
+</body>
+</html>
