@@ -9,9 +9,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY backend backend
-COPY runpod_handler.py .
+COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "runpod_handler.py"]
+# Pod stays alive; jobs are run manually
+CMD ["sleep", "infinity"]
