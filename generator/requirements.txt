@@ -3,3 +3,4 @@ ebooklib
 beautifulsoup4
 pydub
 tqdm
+numpy>=1.23
