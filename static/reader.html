@@ -44,7 +44,7 @@
   <div id="list"></div>
 </div>
 
-<div id="right" id="reader"></div>
+<div id="right"></div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
@@ -52,7 +52,7 @@ const bookId = params.get("bookId");
 
 if (!bookId) {
   alert("Missing bookId");
-  location.href = "index.html";
+  location.href = "/audiobook-platform/static/index.html";
 }
 
 const base = `/audiobooks/${bookId}`;
@@ -71,7 +71,7 @@ function getText(p) {
 }
 
 async function loadData() {
-  sync = await fetch(`${base}/sync_map.json`).then(r => r.json());
+  sync  = await fetch(`${base}/sync_map.json`).then(r => r.json());
   paras = await fetch(`${base}/paragraphs.json`).then(r => r.json());
 
   paras.forEach((p, i) => {
@@ -96,9 +96,10 @@ audio.ontimeupdate = () => {
   while (i + 1 < sync.length && sync[i + 1].start <= t) i++;
 
   if (i !== active) {
-    const items = document.querySelectorAll(".para");
-    items.forEach(el => el.classList.remove("active"));
-    if (items[i]) items[i].classList.add("active");
+    document.querySelectorAll(".para").forEach(el =>
+      el.classList.remove("active")
+    );
+    if (list.children[i]) list.children[i].classList.add("active");
     active = i;
   }
 };
