@@ -51,7 +51,8 @@ function openReader() {
     alert("Please enter a book-id");
     return;
   }
-  window.location.href = `reader.html?bookId=${encodeURIComponent(id)}`;
+  window.location.href =
+    `/audiobook-platform/static/reader.html?bookId=${encodeURIComponent(id)}`;
 }
 </script>
 
