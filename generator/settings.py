@@ -9,4 +9,4 @@ BOOKS_DIR = VOLUME_ROOT / "audiobooks"
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY is
+    raise RuntimeError("OPENAI_API_KEY is missing")
