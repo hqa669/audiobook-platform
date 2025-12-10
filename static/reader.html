@@ -1,21 +1,110 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Audiobook Reader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    #left {
+      width: 340px;
+      padding: 1rem;
+      border-right: 1px solid #ddd;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    #right {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .para {
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+    .para.active {
+      background: #e8f0ff;
+      border-left: 3px solid #2563eb;
+    }
+    audio {
+      width: 100%;
+    }
+  </style>
+</head>
 <body>
-<audio id="audio" controls src="audio.mp3"></audio>
-<div id="text"></div>
+
+<div id="left">
+  <audio id="audio" controls></audio>
+  <div id="list"></div>
+</div>
+
+<div id="right" id="reader"></div>
 
 <script>
-fetch("sync_map.json").then(r => r.json()).then(sync => {
-  const audio = document.getElementById("audio")
-  const c = document.getElementById("text")
+const params = new URLSearchParams(window.location.search);
+const bookId = params.get("bookId");
 
-  sync.forEach(p => {
-    const d = document.createElement("div")
-    d.textContent = p.text
-    d.onclick = () => audio.currentTime = p.start
-    c.appendChild(d)
-  })
-})
+if (!bookId) {
+  alert("Missing bookId");
+  location.href = "index.html";
+}
+
+const base = `/audiobooks/${bookId}`;
+const audio = document.getElementById("audio");
+const list = document.getElementById("list");
+const reader = document.getElementById("right");
+
+audio.src = `${base}/audio.mp3`;
+
+let sync = [];
+let paras = [];
+let active = -1;
+
+function getText(p) {
+  return typeof p === "string" ? p : p.text;
+}
+
+async function loadData() {
+  sync = await fetch(`${base}/sync_map.json`).then(r => r.json());
+  paras = await fetch(`${base}/paragraphs.json`).then(r => r.json());
+
+  paras.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "para";
+    div.textContent = getText(p);
+    div.onclick = () => {
+      audio.currentTime = sync[i].start;
+      audio.play();
+    };
+    list.appendChild(div);
+
+    const para = document.createElement("p");
+    para.textContent = getText(p);
+    reader.appendChild(para);
+  });
+}
+
+audio.ontimeupdate = () => {
+  const t = audio.currentTime;
+  let i = 0;
+  while (i + 1 < sync.length && sync[i + 1].start <= t) i++;
+
+  if (i !== active) {
+    const items = document.querySelectorAll(".para");
+    items.forEach(el => el.classList.remove("active"));
+    if (items[i]) items[i].classList.add("active");
+    active = i;
+  }
+};
+
+loadData();
 </script>
+
 </body>
 </html>
