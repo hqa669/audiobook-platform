@@ -25,3 +25,7 @@ This project prioritizes correctness, clarity, and durability over speed or scal
 ## Phase Lock
 Phases 1 and 2 are complete and MUST NOT be modified.
 All future work must build on top of their outputs.
+
+## Future UI Expansion
+UI complexity is expected to grow.
+UI-related documentation will be added only when real complexity emerges.
